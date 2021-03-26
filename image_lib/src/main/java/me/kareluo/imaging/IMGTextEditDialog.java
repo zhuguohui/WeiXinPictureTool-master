@@ -50,7 +50,7 @@ public class IMGTextEditDialog extends Dialog implements View.OnClickListener,
         mEditText = findViewById(R.id.et_text);
 
         findViewById(R.id.tv_cancel).setOnClickListener(this);
-        findViewById(R.id.tv_done).setOnClickListener(this);
+        findViewById(R.id.tv_txt_done).setOnClickListener(this);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class IMGTextEditDialog extends Dialog implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         int vid = v.getId();
-        if (vid == R.id.tv_done) {
+        if (vid == R.id.tv_txt_done) {
             onDone();
         } else if (vid == R.id.tv_cancel) {
             dismiss();

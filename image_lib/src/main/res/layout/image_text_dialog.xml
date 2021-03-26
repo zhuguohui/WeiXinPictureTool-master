@@ -24,7 +24,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/tv_done"
+            android:id="@+id/tv_txt_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ImageEditTheme" parent="Theme.AppCompat">
+    <style name="ImageEditTheme" parent="Theme.AppCompat.NoActionBar">
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
@@ -11,7 +11,7 @@
 
     </style>
 
-    <style name="ImageTextDialog" parent="android:Theme.Holo.Dialog">
+    <style name="ImageTextDialog" parent="Theme.AppCompat.Dialog">
 
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
@@ -31,7 +31,7 @@
 
     </style>
 
-    <style name="ImageDialogAnimation" parent="android:Animation.Dialog">
+    <style name="ImageDialogAnimation" parent="Theme.AppCompat.Dialog">
 
         <item name="android:windowEnterAnimation">@anim/image_dialog_enter</item>
         <item name="android:windowExitAnimation">@anim/image_dialog_exit</item>
