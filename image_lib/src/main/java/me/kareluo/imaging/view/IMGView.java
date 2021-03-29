@@ -10,6 +10,7 @@ import android.graphics.CornerPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -58,6 +59,8 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private Paint mMosaicPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+    private Paint mBoxPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     private static final boolean DEBUG = true;
 
     {
@@ -76,6 +79,15 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mMosaicPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_MOSAIC_WIDTH));
         mMosaicPaint.setStrokeCap(Paint.Cap.ROUND);
         mMosaicPaint.setStrokeJoin(Paint.Join.ROUND);
+
+
+        // 选择框画刷
+        mBoxPaint.setStyle(Paint.Style.STROKE);
+        mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+        mBoxPaint.setColor(Color.RED);
+        mBoxPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
+        mBoxPaint.setStrokeCap(Paint.Cap.ROUND);
+        mBoxPaint.setStrokeJoin(Paint.Join.ROUND);
     }
 
     public IMGView(Context context) {
@@ -228,12 +240,27 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mImage.onDrawDoodles(canvas);
         if (mImage.getMode() == IMGMode.DOODLE && !mPen.isEmpty()) {
             mDoodlePaint.setColor(mPen.getColor());
-            mDoodlePaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH );
+            mDoodlePaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
             canvas.save();
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
             canvas.translate(getScrollX(), getScrollY());
             canvas.drawPath(mPen.getPath(), mDoodlePaint);
+            canvas.restore();
+        }
+
+        //选择框
+
+        mImage.onDrawBoxes(canvas);
+        if (mImage.getMode() == IMGMode.BOX && !mPen.isEmpty()) {
+            mBoxPaint.setColor(mPen.getColor());
+            mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+            canvas.save();
+            RectF frame = mImage.getClipFrame();
+            canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
+            canvas.translate(getScrollX(), getScrollY());
+//            canvas.drawPath(mPen.getPath(), mDoodlePaint);
+            canvas.drawRect(mPen.getFirstPoint().x, mPen.getFirstPoint().y, mPen.getLastPoint().x, mPen.getLastPoint().y, mBoxPaint);
             canvas.restore();
         }
 
@@ -378,7 +405,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         if (mode == IMGMode.NONE || mode == IMGMode.CLIP) {
             handled |= onTouchNONE(event);
         } else if (mPointerCount > 1) {
-            onPathDone();
+            onPathDone(event);
             handled |= onTouchNONE(event);
         } else {
             handled |= onTouchPath(event);
@@ -411,7 +438,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
                 return onPathMove(event);
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                return mPen.isIdentity(event.getPointerId(0)) && onPathDone();
+                return mPen.isIdentity(event.getPointerId(0)) && onPathDone(event);
         }
         return false;
     }
@@ -424,6 +451,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private boolean onPathMove(MotionEvent event) {
         if (mPen.isIdentity(event.getPointerId(0))) {
+            mPen.setLastPoint((int) event.getX(), (int) event.getY());
             mPen.lineTo(event.getX(), event.getY());
             invalidate();
             return true;
@@ -431,12 +459,14 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         return false;
     }
 
-    private boolean onPathDone() {
+    private boolean onPathDone(MotionEvent event) {
         if (mPen.isEmpty()) {
             return false;
         }
+        mPen.setLastPoint((int) event.getX(), (int) event.getY());
         mImage.addPath(mPen.toPath(), getScrollX(), getScrollY());
         mPen.reset();
+
         invalidate();
         return true;
     }
@@ -614,6 +644,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             this.path.reset();
             this.path.moveTo(x, y);
             this.identity = Integer.MIN_VALUE;
+            this.firstPoint = new Point((int) x, (int) y);
         }
 
         void setIdentity(int identity) {
@@ -633,7 +664,10 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         }
 
         IMGPath toPath() {
-            return new IMGPath(new Path(this.path), getMode(), getColor(), getWidth());
+            IMGPath imgPath = new IMGPath(new Path(this.path), getMode(), getColor(), getWidth());
+            imgPath.setFirstPoint(firstPoint.x, firstPoint.y);
+            imgPath.setLastPoint(lastPoint.x, lastPoint.y);
+            return imgPath;
         }
     }
 }

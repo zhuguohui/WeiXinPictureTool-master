@@ -76,7 +76,10 @@ abstract class IMGEditBaseActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View v) {
         int vid = v.getId();
-        if (vid == R.id.rb_doodle) {
+        if(vid==R.id.rb_box){
+            onModeClick(IMGMode.BOX);
+        }
+        else if (vid == R.id.rb_doodle) {
             onModeClick(IMGMode.DOODLE);
         } else if (vid == R.id.btn_text) {
             onTextModeClick();
@@ -104,6 +107,10 @@ abstract class IMGEditBaseActivity extends AppCompatActivity implements View.OnC
     public void updateModeUI() {
         IMGMode mode = mImgView.getMode();
         switch (mode) {
+            case BOX:
+                mModeGroup.check(R.id.rb_box);
+                setOpSubDisplay(OP_SUB_DOODLE);
+                break;
             case DOODLE:
                 mModeGroup.check(R.id.rb_doodle);
                 setOpSubDisplay(OP_SUB_DOODLE);

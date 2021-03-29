@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 
 /**
  * Created by felix on 2017/11/22 下午6:13.
@@ -13,6 +14,9 @@ import android.graphics.Path;
 public class IMGPath {
 
     protected Path path;
+
+    protected Point firstPoint = new Point();
+    protected Point lastPoint = new Point();
 
     private int color = Color.RED;
 
@@ -48,6 +52,22 @@ public class IMGPath {
         if (mode == IMGMode.MOSAIC) {
             path.setFillType(Path.FillType.EVEN_ODD);
         }
+    }
+
+    public Point getFirstPoint() {
+        return firstPoint;
+    }
+
+    public Point getLastPoint() {
+        return lastPoint;
+    }
+
+    public void setFirstPoint(int x, int y) {
+        this.firstPoint.set(x, y);
+    }
+
+    public void setLastPoint(int x, int y) {
+        this.lastPoint.set(x, y);
     }
 
     public Path getPath() {
@@ -88,6 +108,18 @@ public class IMGPath {
             // rewind
             paint.setStrokeWidth(width);
             canvas.drawPath(path, paint);
+        }
+    }
+
+
+    public void onDrawBox(Canvas canvas, Paint paint) {
+        if (mode == IMGMode.BOX) {
+            paint.setColor(color);
+            // rewind
+            paint.setStrokeWidth(width);
+//            canvas.drawPath(path, paint);
+            canvas.drawRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, paint);
+
         }
     }
 

@@ -103,6 +103,10 @@ public class IMGImage {
      * 涂鸦路径
      */
     private List<IMGPath> mDoodles = new ArrayList<>();
+    /**
+     * 选择框路径
+     */
+    private List<IMGPath> mBoxes = new ArrayList<>();
 
     /**
      * 马赛克路径
@@ -113,7 +117,7 @@ public class IMGImage {
 
     private static final int MAX_SIZE = 10000;
 
-    private Paint mPaint, mMosaicPaint, mShadePaint;
+    private Paint mPaint, mMosaicPaint, mShadePaint,mBoxPaint;
 
     private Matrix M = new Matrix();
 
@@ -395,6 +399,13 @@ public class IMGImage {
         M.postTranslate(-mFrame.left, -mFrame.top);
         M.postScale(scale, scale);
         path.transform(M);
+        //使用矩阵对第一个点和最后一点进行偏移
+        float[] points = new float[]{path.firstPoint.x, path.firstPoint.y, path.lastPoint.x, path.lastPoint.y};
+        M.mapPoints(points);
+        path.firstPoint.x = (int) points[0];
+        path.firstPoint.y = (int) points[1];
+        path.lastPoint.x = (int) points[2];
+        path.lastPoint.y = (int) points[3];
 
         switch (path.getMode()) {
             case DOODLE:
@@ -404,6 +415,10 @@ public class IMGImage {
             case MOSAIC:
                 path.setWidth(path.getWidth() * scale);
                 mMosaics.add(path);
+                break;
+            case BOX:
+                path.setWidth(IMGPath.BASE_DOODLE_WIDTH * scale);
+                mBoxes.add(path);
                 break;
         }
     }
@@ -563,6 +578,19 @@ public class IMGImage {
             canvas.scale(scale, scale);
             for (IMGPath path : mDoodles) {
                 path.onDrawDoodle(canvas, mPaint);
+            }
+            canvas.restore();
+        }
+    }
+
+    public void onDrawBoxes(Canvas canvas) {
+        if (!mBoxes.isEmpty()) {
+            canvas.save();
+            float scale = getScale();
+            canvas.translate(mFrame.left, mFrame.top);
+            canvas.scale(scale, scale);
+            for (IMGPath path : mBoxes) {
+                path.onDrawBox(canvas, mPaint);
             }
             canvas.restore();
         }
@@ -780,4 +808,6 @@ public class IMGImage {
             DEFAULT_IMAGE.recycle();
         }
     }
+
+
 }
