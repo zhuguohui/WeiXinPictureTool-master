@@ -10,6 +10,7 @@ public enum IMGMode {
     DOODLE,
     MOSAIC,
     CLIP,
-    BOX
+    BOX,
+    ROUND
 
 }

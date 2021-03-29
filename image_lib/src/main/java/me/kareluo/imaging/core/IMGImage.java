@@ -104,9 +104,13 @@ public class IMGImage {
      */
     private List<IMGPath> mDoodles = new ArrayList<>();
     /**
-     * 选择框路径
+     * 方形选择框路径
      */
     private List<IMGPath> mBoxes = new ArrayList<>();
+    /**
+     * 圆形选择框路径
+     */
+    private List<IMGPath> mRounds = new ArrayList<>();
 
     /**
      * 马赛克路径
@@ -117,7 +121,7 @@ public class IMGImage {
 
     private static final int MAX_SIZE = 10000;
 
-    private Paint mPaint, mMosaicPaint, mShadePaint,mBoxPaint;
+    private Paint mPaint, mMosaicPaint, mShadePaint;
 
     private Matrix M = new Matrix();
 
@@ -142,6 +146,7 @@ public class IMGImage {
         mPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
+
     }
 
     public IMGImage() {
@@ -244,6 +249,20 @@ public class IMGImage {
             mDoodles.remove(mDoodles.size() - 1);
         }
     }
+
+    public void undoRound() {
+        if (!mRounds.isEmpty()) {
+            mRounds.remove(mRounds.size() - 1);
+        }
+    }
+
+    public void undoBox() {
+        if (!mBoxes.isEmpty()) {
+            mBoxes.remove(mBoxes.size() - 1);
+        }
+    }
+
+
 
     public void undoMosaic() {
         if (!mMosaics.isEmpty()) {
@@ -420,6 +439,10 @@ public class IMGImage {
                 path.setWidth(IMGPath.BASE_DOODLE_WIDTH * scale);
                 mBoxes.add(path);
                 break;
+            case ROUND:
+                path.setWidth(IMGPath.BASE_DOODLE_WIDTH * scale);
+                mRounds.add(path);
+                break;
         }
     }
 
@@ -591,6 +614,19 @@ public class IMGImage {
             canvas.scale(scale, scale);
             for (IMGPath path : mBoxes) {
                 path.onDrawBox(canvas, mPaint);
+            }
+            canvas.restore();
+        }
+    }
+
+    public void onDrawRound(Canvas canvas) {
+        if (!mRounds.isEmpty()) {
+            canvas.save();
+            float scale = getScale();
+            canvas.translate(mFrame.left, mFrame.top);
+            canvas.scale(scale, scale);
+            for (IMGPath path : mRounds) {
+                path.onDrawRound(canvas, mPaint);
             }
             canvas.restore();
         }
@@ -808,6 +844,7 @@ public class IMGImage {
             DEFAULT_IMAGE.recycle();
         }
     }
+
 
 
 }

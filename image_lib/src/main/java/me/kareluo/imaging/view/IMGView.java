@@ -259,8 +259,28 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
             canvas.translate(getScrollX(), getScrollY());
-//            canvas.drawPath(mPen.getPath(), mDoodlePaint);
             canvas.drawRect(mPen.getFirstPoint().x, mPen.getFirstPoint().y, mPen.getLastPoint().x, mPen.getLastPoint().y, mBoxPaint);
+            canvas.restore();
+        }
+
+        //圆形选择框
+        mImage.onDrawRound(canvas);
+        if (mImage.getMode() == IMGMode.ROUND && !mPen.isEmpty()) {
+            mBoxPaint.setColor(mPen.getColor());
+            mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+            canvas.save();
+            RectF frame = mImage.getClipFrame();
+            canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
+            canvas.translate(getScrollX(), getScrollY());
+            Point firstPoint = mPen.getFirstPoint();
+            Point lastPoint = mPen.getLastPoint();
+            int cx = (firstPoint.x + lastPoint.x) / 2;
+            int cy = (firstPoint.y + lastPoint.y) / 2;
+            int dx = firstPoint.x - lastPoint.x;
+            int dy = firstPoint.y - lastPoint.y;
+            int r = (int) Math.sqrt(dx * dx + dy * dy) / 2;
+            canvas.drawCircle(cx, cy, r, mBoxPaint);
+
             canvas.restore();
         }
 
@@ -610,6 +630,16 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             return true;
         }
         return onScrollTo(getScrollX() + Math.round(dx), getScrollY() + Math.round(dy));
+    }
+
+    public void undoRound() {
+        mImage.undoRound();
+        invalidate();
+    }
+
+    public void undoBox() {
+        mImage.undoBox();
+        invalidate();
     }
 
     private class MoveAdapter extends GestureDetector.SimpleOnGestureListener {

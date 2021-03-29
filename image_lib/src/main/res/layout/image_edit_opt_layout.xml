@@ -154,6 +154,18 @@
         <Space
             android:layout_width="@dimen/image_mode_space"
             android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/rb_round"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/image_btn_round"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:textColor="#FFF" />
+
+        <Space
+            android:layout_width="@dimen/image_mode_space"
+            android:layout_height="wrap_content" />
 
         <RadioButton
             android:id="@+id/rb_doodle"

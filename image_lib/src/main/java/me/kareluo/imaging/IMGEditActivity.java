@@ -131,6 +131,10 @@ public class IMGEditActivity extends IMGEditBaseActivity {
             mImgView.undoDoodle();
         } else if (mode == IMGMode.MOSAIC) {
             mImgView.undoMosaic();
+        }else if(mode==IMGMode.ROUND){
+            mImgView.undoRound();
+        }else if(mode==IMGMode.BOX){
+            mImgView.undoBox();
         }
     }
 
