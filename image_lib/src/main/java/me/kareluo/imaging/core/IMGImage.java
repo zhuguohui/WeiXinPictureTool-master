@@ -125,7 +125,7 @@ public class IMGImage {
 
     private static final int MAX_SIZE = 10000;
 
-    private Paint mPaint, mMosaicPaint, mShadePaint, mBoxPaint,mArrowPaint;
+    private Paint mPaint, mMosaicPaint, mShadePaint, mBoxPaint, mArrowPaint;
 
     private Matrix M = new Matrix();
 
@@ -162,7 +162,7 @@ public class IMGImage {
 
 
         //箭头
-        mArrowPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        mArrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mArrowPaint.setStyle(Paint.Style.FILL);
         mArrowPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
         mArrowPaint.setColor(Color.RED);
@@ -435,7 +435,7 @@ public class IMGImage {
     }
 
     public void addPath(IMGPath path, float sx, float sy) {
-        if (path == null||path.getPath().isEmpty()) return;
+        if (path == null || path.getPath() == null || path.getPath().isEmpty()) return;
 
         float scale = 1f / getScale();
 
@@ -655,6 +655,7 @@ public class IMGImage {
             canvas.restore();
         }
     }
+
     public void onDrawArrow(Canvas canvas) {
         if (!mArrows.isEmpty()) {
             canvas.save();
