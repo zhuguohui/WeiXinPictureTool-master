@@ -111,6 +111,10 @@ public class IMGImage {
      * 圆形选择框路径
      */
     private List<IMGPath> mRounds = new ArrayList<>();
+    /**
+     * 箭头路径
+     */
+    private List<IMGPath> mArrows = new ArrayList<>();
 
     /**
      * 马赛克路径
@@ -121,7 +125,7 @@ public class IMGImage {
 
     private static final int MAX_SIZE = 10000;
 
-    private Paint mPaint, mMosaicPaint, mShadePaint, mBoxPaint;
+    private Paint mPaint, mMosaicPaint, mShadePaint, mBoxPaint,mArrowPaint;
 
     private Matrix M = new Matrix();
 
@@ -156,6 +160,14 @@ public class IMGImage {
         mBoxPaint.setStrokeCap(Paint.Cap.ROUND);
         mBoxPaint.setStrokeJoin(Paint.Join.ROUND);
 
+
+        //箭头
+        mArrowPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        mArrowPaint.setStyle(Paint.Style.FILL);
+        mArrowPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+        mArrowPaint.setColor(Color.RED);
+        mArrowPaint.setStrokeCap(Paint.Cap.ROUND);
+        mArrowPaint.setStrokeJoin(Paint.Join.ROUND);
     }
 
     public IMGImage() {
@@ -268,6 +280,12 @@ public class IMGImage {
     public void undoBox() {
         if (!mBoxes.isEmpty()) {
             mBoxes.remove(mBoxes.size() - 1);
+        }
+    }
+
+    public void undoArrow() {
+        if (!mArrows.isEmpty()) {
+            mArrows.remove(mArrows.size() - 1);
         }
     }
 
@@ -417,7 +435,7 @@ public class IMGImage {
     }
 
     public void addPath(IMGPath path, float sx, float sy) {
-        if (path == null) return;
+        if (path == null||path.getPath().isEmpty()) return;
 
         float scale = 1f / getScale();
 
@@ -429,6 +447,10 @@ public class IMGImage {
 
 
         switch (path.getMode()) {
+            case ARROW:
+                path.setWidth(IMGPath.BASE_DOODLE_WIDTH * scale);
+                mArrows.add(path);
+                break;
             case DOODLE:
                 path.setWidth(IMGPath.BASE_DOODLE_WIDTH * scale);
                 mDoodles.add(path);
@@ -629,6 +651,18 @@ public class IMGImage {
             canvas.scale(scale, scale);
             for (IMGPath path : mRounds) {
                 path.onDrawRound(canvas, mPaint);
+            }
+            canvas.restore();
+        }
+    }
+    public void onDrawArrow(Canvas canvas) {
+        if (!mArrows.isEmpty()) {
+            canvas.save();
+            float scale = getScale();
+            canvas.translate(mFrame.left, mFrame.top);
+            canvas.scale(scale, scale);
+            for (IMGPath path : mArrows) {
+                path.onDrawArrow(canvas, mArrowPaint);
             }
             canvas.restore();
         }

@@ -11,6 +11,7 @@ public enum IMGMode {
     MOSAIC,
     CLIP,
     BOX,
-    ROUND
+    ROUND,
+    ARROW
 
 }

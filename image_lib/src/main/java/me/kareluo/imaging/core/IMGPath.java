@@ -125,15 +125,18 @@ public class IMGPath {
             paint.setColor(color);
             // rewind
             paint.setStrokeWidth(width);
-//            canvas.drawPath(path, paint);
-//            canvas.drawRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, paint);
-            //计算圆心
-          /*  int cx = (firstPoint.x + lastPoint.x) / 2;
-            int cy = (firstPoint.y + lastPoint.y) / 2;
-            int dx = firstPoint.x - lastPoint.x;
-            int dy = firstPoint.y - lastPoint.y;
-            int r = (int) Math.sqrt(dx * dx + dy * dy) / 2;
-            canvas.drawCircle(cx, cy, r, paint);*/
+
+            canvas.drawPath(path,paint);
+
+
+        }
+    }
+    public void onDrawArrow(Canvas canvas, Paint paint) {
+        if (mode == IMGMode.ARROW) {
+            paint.setColor(color);
+            // rewind
+            paint.setStrokeWidth(width);
+
             canvas.drawPath(path,paint);
 
 

@@ -135,6 +135,8 @@ public class IMGEditActivity extends IMGEditBaseActivity {
             mImgView.undoRound();
         }else if(mode==IMGMode.BOX){
             mImgView.undoBox();
+        }else if(mode==IMGMode.ARROW){
+            mImgView.undoArrow();
         }
     }
 

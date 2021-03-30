@@ -32,6 +32,7 @@ import me.kareluo.imaging.core.anim.IMGHomingAnimator;
 import me.kareluo.imaging.core.homing.IMGHoming;
 import me.kareluo.imaging.core.sticker.IMGSticker;
 import me.kareluo.imaging.core.sticker.IMGStickerPortrait;
+import me.kareluo.imaging.core.util.ArrowHelper;
 
 /**
  * Created by felix on 2017/11/14 下午6:43.
@@ -62,6 +63,8 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private Paint mBoxPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+    private Paint mArrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     private static final boolean DEBUG = true;
 
     {
@@ -86,10 +89,18 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mBoxPaint.setStyle(Paint.Style.STROKE);
         mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
         mBoxPaint.setColor(Color.RED);
-    //    mBoxPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
+        //    mBoxPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
         mBoxPaint.setStrokeCap(Paint.Cap.ROUND);
         mBoxPaint.setStrokeJoin(Paint.Join.ROUND);
+
+        //箭头
+        mArrowPaint.setStyle(Paint.Style.FILL);
+        mArrowPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+        mArrowPaint.setColor(Color.RED);
+        mArrowPaint.setStrokeCap(Paint.Cap.ROUND);
+        mArrowPaint.setStrokeJoin(Paint.Join.ROUND);
     }
+
 
     public IMGView(Context context) {
         this(context, null, 0);
@@ -268,8 +279,8 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         //圆形选择框
         mImage.onDrawRound(canvas);
         if (mImage.getMode() == IMGMode.ROUND && !mPen.isEmpty()) {
-            mBoxPaint.setColor(mPen.getColor());
-            mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+            mDoodlePaint.setColor(mPen.getColor());
+            mDoodlePaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
             canvas.save();
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
@@ -277,6 +288,22 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             canvas.drawPath(mPen.transformPath(null, mPen.getMode()), mDoodlePaint);
 
             canvas.restore();
+        }
+        //画箭头
+        mImage.onDrawArrow(canvas);
+        if (mImage.getMode() == IMGMode.ARROW && !mPen.isEmpty()) {
+            Path path = mPen.transformPath(null, mPen.getMode());
+            if (path != null) {
+                mArrowPaint.setColor(mPen.getColor());
+                mArrowPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+                canvas.save();
+                RectF frame = mImage.getClipFrame();
+                canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
+                canvas.translate(getScrollX(), getScrollY());
+                canvas.drawPath(mPen.transformPath(null, mPen.getMode()), mArrowPaint);
+                canvas.restore();
+            }
+
         }
 
         // TODO
@@ -637,6 +664,12 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         invalidate();
     }
 
+    public void undoArrow() {
+        mImage.undoArrow();
+        invalidate();
+    }
+
+
     private class MoveAdapter extends GestureDetector.SimpleOnGestureListener {
 
         @Override
@@ -658,7 +691,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private static class Pen extends IMGPath {
 
-
+        ArrowHelper arrowHelper = new ArrowHelper();
         protected PointF firstPoint = new PointF();
         protected PointF lastPoint = new PointF();
 
@@ -715,6 +748,10 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 //                canvas.drawCircle(cx, cy, r, paint);
                 mPath.addCircle(cx, cy, r, Path.Direction.CCW);
                 return mPath;
+            }
+
+            if (mode == IMGMode.ARROW) {
+                return arrowHelper.buildPath(firstPoint, lastPoint);
             }
 
             return path;
