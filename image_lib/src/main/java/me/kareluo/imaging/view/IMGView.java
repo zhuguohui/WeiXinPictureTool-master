@@ -11,6 +11,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -85,7 +86,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         mBoxPaint.setStyle(Paint.Style.STROKE);
         mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
         mBoxPaint.setColor(Color.RED);
-        mBoxPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
+    //    mBoxPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
         mBoxPaint.setStrokeCap(Paint.Cap.ROUND);
         mBoxPaint.setStrokeJoin(Paint.Join.ROUND);
     }
@@ -259,7 +260,8 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
             canvas.translate(getScrollX(), getScrollY());
-            canvas.drawRect(mPen.getFirstPoint().x, mPen.getFirstPoint().y, mPen.getLastPoint().x, mPen.getLastPoint().y, mBoxPaint);
+            // canvas.drawRect(mPen.getFirstPoint().x, mPen.getFirstPoint().y, mPen.getLastPoint().x, mPen.getLastPoint().y, mBoxPaint);
+            canvas.drawPath(mPen.transformPath(null, mPen.getMode()), mBoxPaint);
             canvas.restore();
         }
 
@@ -272,14 +274,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             RectF frame = mImage.getClipFrame();
             canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY());
             canvas.translate(getScrollX(), getScrollY());
-            Point firstPoint = mPen.getFirstPoint();
-            Point lastPoint = mPen.getLastPoint();
-            int cx = (firstPoint.x + lastPoint.x) / 2;
-            int cy = (firstPoint.y + lastPoint.y) / 2;
-            int dx = firstPoint.x - lastPoint.x;
-            int dy = firstPoint.y - lastPoint.y;
-            int r = (int) Math.sqrt(dx * dx + dy * dy) / 2;
-            canvas.drawCircle(cx, cy, r, mBoxPaint);
+            canvas.drawPath(mPen.transformPath(null, mPen.getMode()), mDoodlePaint);
 
             canvas.restore();
         }
@@ -471,7 +466,7 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private boolean onPathMove(MotionEvent event) {
         if (mPen.isIdentity(event.getPointerId(0))) {
-            mPen.setLastPoint((int) event.getX(), (int) event.getY());
+            mPen.setLastPoint(event.getX(), event.getY());
             mPen.lineTo(event.getX(), event.getY());
             invalidate();
             return true;
@@ -663,6 +658,10 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
 
     private static class Pen extends IMGPath {
 
+
+        protected PointF firstPoint = new PointF();
+        protected PointF lastPoint = new PointF();
+
         private int identity = Integer.MIN_VALUE;
 
         void reset() {
@@ -674,7 +673,8 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
             this.path.reset();
             this.path.moveTo(x, y);
             this.identity = Integer.MIN_VALUE;
-            this.firstPoint = new Point((int) x, (int) y);
+            this.firstPoint.x = x;
+            this.firstPoint.y = y;
         }
 
         void setIdentity(int identity) {
@@ -694,10 +694,35 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         }
 
         IMGPath toPath() {
-            IMGPath imgPath = new IMGPath(new Path(this.path), getMode(), getColor(), getWidth());
-            imgPath.setFirstPoint(firstPoint.x, firstPoint.y);
-            imgPath.setLastPoint(lastPoint.x, lastPoint.y);
+            IMGPath imgPath = new IMGPath(new Path(transformPath(path, getMode())), getMode(), getColor(), getWidth());
             return imgPath;
+        }
+
+        Path transformPath(Path path, IMGMode mode) {
+            if (mode == IMGMode.BOX) {
+                Path mPath = new Path();
+
+                mPath.addRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, Path.Direction.CW);
+                return mPath;
+            }
+            if (mode == IMGMode.ROUND) {
+                Path mPath = new Path();
+                float cx = (firstPoint.x + lastPoint.x) / 2;
+                float cy = (firstPoint.y + lastPoint.y) / 2;
+                float dx = firstPoint.x - lastPoint.x;
+                float dy = firstPoint.y - lastPoint.y;
+                int r = (int) Math.sqrt(dx * dx + dy * dy) / 2;
+//                canvas.drawCircle(cx, cy, r, paint);
+                mPath.addCircle(cx, cy, r, Path.Direction.CCW);
+                return mPath;
+            }
+
+            return path;
+        }
+
+        public void setLastPoint(float x, float y) {
+            lastPoint.x = x;
+            lastPoint.y = y;
         }
     }
 }

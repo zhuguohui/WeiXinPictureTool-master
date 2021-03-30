@@ -121,7 +121,7 @@ public class IMGImage {
 
     private static final int MAX_SIZE = 10000;
 
-    private Paint mPaint, mMosaicPaint, mShadePaint;
+    private Paint mPaint, mMosaicPaint, mShadePaint, mBoxPaint;
 
     private Matrix M = new Matrix();
 
@@ -146,6 +146,15 @@ public class IMGImage {
         mPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
+
+
+        mBoxPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBoxPaint.setStyle(Paint.Style.STROKE);
+        mBoxPaint.setStrokeWidth(IMGPath.BASE_DOODLE_WIDTH);
+        mBoxPaint.setColor(Color.BLUE);
+//        mBoxPaint.setPathEffect(new CornerPathEffect(IMGPath.BASE_DOODLE_WIDTH));
+        mBoxPaint.setStrokeCap(Paint.Cap.ROUND);
+        mBoxPaint.setStrokeJoin(Paint.Join.ROUND);
 
     }
 
@@ -261,7 +270,6 @@ public class IMGImage {
             mBoxes.remove(mBoxes.size() - 1);
         }
     }
-
 
 
     public void undoMosaic() {
@@ -418,13 +426,7 @@ public class IMGImage {
         M.postTranslate(-mFrame.left, -mFrame.top);
         M.postScale(scale, scale);
         path.transform(M);
-        //使用矩阵对第一个点和最后一点进行偏移
-        float[] points = new float[]{path.firstPoint.x, path.firstPoint.y, path.lastPoint.x, path.lastPoint.y};
-        M.mapPoints(points);
-        path.firstPoint.x = (int) points[0];
-        path.firstPoint.y = (int) points[1];
-        path.lastPoint.x = (int) points[2];
-        path.lastPoint.y = (int) points[3];
+
 
         switch (path.getMode()) {
             case DOODLE:
@@ -613,7 +615,7 @@ public class IMGImage {
             canvas.translate(mFrame.left, mFrame.top);
             canvas.scale(scale, scale);
             for (IMGPath path : mBoxes) {
-                path.onDrawBox(canvas, mPaint);
+                path.onDrawBox(canvas, mBoxPaint);
             }
             canvas.restore();
         }
@@ -844,7 +846,6 @@ public class IMGImage {
             DEFAULT_IMAGE.recycle();
         }
     }
-
 
 
 }

@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PointF;
 
 /**
  * Created by felix on 2017/11/22 下午6:13.
@@ -14,9 +15,8 @@ import android.graphics.Point;
 public class IMGPath {
 
     protected Path path;
-
-    protected Point firstPoint = new Point();
-    protected Point lastPoint = new Point();
+    protected PointF firstPoint = new PointF();
+    protected PointF lastPoint = new PointF();
 
     private int color = Color.RED;
 
@@ -54,21 +54,7 @@ public class IMGPath {
         }
     }
 
-    public Point getFirstPoint() {
-        return firstPoint;
-    }
 
-    public Point getLastPoint() {
-        return lastPoint;
-    }
-
-    public void setFirstPoint(int x, int y) {
-        this.firstPoint.set(x, y);
-    }
-
-    public void setLastPoint(int x, int y) {
-        this.lastPoint.set(x, y);
-    }
 
     public Path getPath() {
         return path;
@@ -118,7 +104,7 @@ public class IMGPath {
             // rewind
             paint.setStrokeWidth(width);
 //            canvas.drawPath(path, paint);
-            canvas.drawRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, paint);
+            canvas.drawPath(path, paint);
 
         }
     }
@@ -142,12 +128,13 @@ public class IMGPath {
 //            canvas.drawPath(path, paint);
 //            canvas.drawRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, paint);
             //计算圆心
-            int cx=(firstPoint.x+lastPoint.x)/2;
-            int cy=(firstPoint.y+lastPoint.y)/2;
-            int dx=firstPoint.x-lastPoint.x;
-            int dy=firstPoint.y-lastPoint.y;
-            int r= (int) Math.sqrt(dx*dx+dy*dy)/2;
-            canvas.drawCircle(cx,cy,r,paint);
+          /*  int cx = (firstPoint.x + lastPoint.x) / 2;
+            int cy = (firstPoint.y + lastPoint.y) / 2;
+            int dx = firstPoint.x - lastPoint.x;
+            int dy = firstPoint.y - lastPoint.y;
+            int r = (int) Math.sqrt(dx * dx + dy * dy) / 2;
+            canvas.drawCircle(cx, cy, r, paint);*/
+            canvas.drawPath(path,paint);
 
 
         }
