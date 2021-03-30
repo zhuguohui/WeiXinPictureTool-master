@@ -339,8 +339,8 @@ public class IMGImage {
 
         if (mMode == IMGMode.MOSAIC) {
 
-            int w = Math.round(mImage.getWidth() / 64f);
-            int h = Math.round(mImage.getHeight() / 64f);
+            int w = Math.round(mImage.getWidth() / 10f);
+            int h = Math.round(mImage.getHeight() / 10f);
 
             w = Math.max(w, 8);
             h = Math.max(h, 8);
