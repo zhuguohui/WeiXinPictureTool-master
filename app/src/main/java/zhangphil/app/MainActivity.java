@@ -71,27 +71,11 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                 //   Intent intent = new Intent(this, IMGEditActivity.class);
-
-                    try {
                         String uri_path = getFilePathByUri(this, data.getData());
                         System.out.println("============ uri_path " + uri_path);
                         Uri uri = Uri.fromFile(new File(uri_path));
 
-                        // intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri);
-                        int dirEnd = uri_path.lastIndexOf("/") + 1;
-                        System.out.println("============ dirEnd " + dirEnd);
-                        int nameEnd = uri_path.lastIndexOf(".");
-                        System.out.println("============ nameEnd " + nameEnd);
-                        String fileName = uri_path.substring(0, dirEnd);
-                        System.out.println("============ fileName " + fileName);
-                        String left = uri_path.substring(nameEnd);
-                        System.out.println("============ nameEnd " + nameEnd);
-                        String newPath = fileName + System.currentTimeMillis() + left;
-                        System.out.println("============ newPath " + newPath);
-                        //    intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
-                        //    startActivity(intent);
+
                         TRSPictureEditor.edit(this, getBitmap(uri), new TRSPictureEditor.EditAdapter() {
                             @Override
                             public void onComplete(Bitmap bitmap) {
@@ -99,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                 }
 
                 break;
