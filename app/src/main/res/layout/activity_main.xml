@@ -73,5 +73,5 @@
         android:layout_below="@id/layout_scroll"
         android:layout_centerInParent="true"
         android:layout_marginTop="10dp"
-        android:text="按钮" />
+        android:text="选择照片" />
 </RelativeLayout>
