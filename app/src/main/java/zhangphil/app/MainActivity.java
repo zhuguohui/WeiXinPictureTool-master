@@ -18,7 +18,9 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -71,17 +73,17 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                        String uri_path = getFilePathByUri(this, data.getData());
-                        System.out.println("============ uri_path " + uri_path);
-                        Uri uri = Uri.fromFile(new File(uri_path));
+                    String uri_path = getFilePathByUri(this, data.getData());
+                    System.out.println("============ uri_path " + uri_path);
+                    Uri uri = Uri.fromFile(new File(uri_path));
 
-
-                        TRSPictureEditor.edit(this, getBitmap(uri), new TRSPictureEditor.EditAdapter() {
-                            @Override
-                            public void onComplete(Bitmap bitmap) {
-                                imageView.setImageBitmap(bitmap);
-                            }
-                        });
+                    TRSPictureEditor.setStyle(buildStyle());
+                    TRSPictureEditor.edit(this, getBitmap(uri), new TRSPictureEditor.EditAdapter() {
+                        @Override
+                        public void onComplete(Bitmap bitmap) {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
 
                 }
 
@@ -92,6 +94,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private int buildStyle() {
+        int style = TRSPictureEditor.ALL_ENABLE;
+        LinearLayout layout = findViewById(R.id.layout_enable);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            CheckBox checkBox = (CheckBox) layout.getChildAt(i);
+            if (!checkBox.isChecked()) {
+                style &= ~TRSPictureEditor.ENABLE_ARRAY[i];
+            }
+        }
+        return style;
     }
 
     private static final int MAX_WIDTH = 1024;

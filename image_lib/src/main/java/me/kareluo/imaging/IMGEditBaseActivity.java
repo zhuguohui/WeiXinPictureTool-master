@@ -71,6 +71,24 @@ abstract class IMGEditBaseActivity extends AppCompatActivity implements View.OnC
         mColorGroup.setOnCheckedChangeListener(this);
 
         mLayoutOpSub = findViewById(R.id.layout_op_sub);
+
+        setStyle();
+    }
+
+    private void setStyle() {
+        //根据TRSPictureEditor中的style来设置那些功能可用
+        int len = TRSPictureEditor.ENABLE_ARRAY.length;
+        for (int i = 0; i < len; i++) {
+            if ((TRSPictureEditor.getStyle() & TRSPictureEditor.ENABLE_ARRAY[i]) == 0) {
+                //功能被禁用
+                int index = i * 2;
+                mModeGroup.getChildAt(index).setVisibility(View.GONE);
+                if (i != len - 1) {
+                    mModeGroup.getChildAt(index + 1).setVisibility(View.GONE);
+                }
+            }
+
+        }
     }
 
     @Override

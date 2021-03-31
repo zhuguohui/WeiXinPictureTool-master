@@ -3,6 +3,7 @@ package me.kareluo.imaging;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.view.View;
 
 
 /**
@@ -12,6 +13,29 @@ import android.graphics.Bitmap;
  * 框架不再保存图片到设备上。
  */
 public class TRSPictureEditor {
+    public static final int BOX_ENABLE = 0x00000001;//方形选择框
+    public static final int CIRCLE_ENABLE = 0x00000002;//圆形选择框
+    public static final int TXT_ENABLE = 0x00000004;//文字
+    public static final int PAINT_ENABLE = 0x00000010;//画笔
+    public static final int ARROW_ENABLE = 0x00000020;//箭头
+    public static final int MOSAIC_ENABLE = 0x00000040;//马赛克
+    public static final int CLIP_ENABLE = 0x00000100;//裁剪
+
+    public static final int ALL_ENABLE = BOX_ENABLE | CIRCLE_ENABLE | TXT_ENABLE | PAINT_ENABLE | ARROW_ENABLE | MOSAIC_ENABLE | CLIP_ENABLE;
+    /**
+     * 定义开启的功能
+     */
+    private static int style = ALL_ENABLE;
+
+    public static final int[] ENABLE_ARRAY = new int[]{BOX_ENABLE, CIRCLE_ENABLE, TXT_ENABLE, PAINT_ENABLE, ARROW_ENABLE, MOSAIC_ENABLE, CLIP_ENABLE};
+
+    public static int getStyle() {
+        return style;
+    }
+
+    public static void setStyle(int style) {
+        TRSPictureEditor.style = style;
+    }
 
     public static void edit(Context context, Bitmap bitmap, EditListener editListener) {
         if (editListener == null) {
