@@ -734,8 +734,13 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
         Path transformPath(Path path, IMGMode mode) {
             if (mode == IMGMode.BOX) {
                 Path mPath = new Path();
+                float x1=Math.min(firstPoint.x,lastPoint.x);
+                float y1=Math.min(firstPoint.y,lastPoint.y);
+                float x2=Math.max(firstPoint.x,lastPoint.x);
+                float y2=Math.max(firstPoint.y,lastPoint.y);
 
-                mPath.addRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, Path.Direction.CW);
+//                mPath.addRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, Path.Direction.CW);
+                mPath.addRect(x1,y1, x2, y2, Path.Direction.CW);
                 return mPath;
             }
             if (mode == IMGMode.ROUND) {
