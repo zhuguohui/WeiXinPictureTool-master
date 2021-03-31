@@ -740,6 +740,13 @@ public class IMGView extends FrameLayout implements Runnable, ScaleGestureDetect
                 float y2=Math.max(firstPoint.y,lastPoint.y);
 
 //                mPath.addRect(firstPoint.x, firstPoint.y, lastPoint.x, lastPoint.y, Path.Direction.CW);
+                float dx=x2-x1;
+                float dy=y2-y1;
+                float size= (float) Math.sqrt(dx*dx+dy*dy);
+                if(size<10){
+                    //对大小进行判断，避免误操作
+                    return mPath;
+                }
                 mPath.addRect(x1,y1, x2, y2, Path.Direction.CW);
                 return mPath;
             }
