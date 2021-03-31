@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.locks.ReentrantLock;
 
 import me.kareluo.imaging.core.IMGMode;
 import me.kareluo.imaging.core.IMGText;
@@ -55,7 +54,7 @@ public class IMGEditActivity extends IMGEditBaseActivity {
         ImageHolder imageHolder = ImageHolder.getInstance();
         Bitmap bitmap = imageHolder.getBitmap();
         imageHolder.setBitmap(null);
-        if (bitmap != null){
+        if (bitmap != null) {
             return bitmap;
         }
 
@@ -131,23 +130,24 @@ public class IMGEditActivity extends IMGEditBaseActivity {
             mImgView.undoDoodle();
         } else if (mode == IMGMode.MOSAIC) {
             mImgView.undoMosaic();
-        }else if(mode==IMGMode.ROUND){
+        } else if (mode == IMGMode.ROUND) {
             mImgView.undoRound();
-        }else if(mode==IMGMode.BOX){
+        } else if (mode == IMGMode.BOX) {
             mImgView.undoBox();
-        }else if(mode==IMGMode.ARROW){
+        } else if (mode == IMGMode.ARROW) {
             mImgView.undoArrow();
         }
     }
 
     @Override
     public void onCancelClick() {
+        ImageHolder.getInstance().getEditListener().onCancel();
         finish();
     }
 
     @Override
     public void onDoneClick() {
-        String path = getIntent().getStringExtra(EXTRA_IMAGE_SAVE_PATH);
+       /* String path = getIntent().getStringExtra(EXTRA_IMAGE_SAVE_PATH);
         if (!TextUtils.isEmpty(path)) {
             Bitmap bitmap = mImgView.saveBitmap();
             Intent data = new Intent();
@@ -157,7 +157,10 @@ public class IMGEditActivity extends IMGEditBaseActivity {
             data.putExtra("path", path);
             setResult(RESULT_OK, data);
             finish();
-        }
+        }*/
+        Bitmap bitmap = mImgView.saveBitmap();
+        ImageHolder.getInstance().setEditedBitmap(bitmap);
+        finish();
     }
 
     public String saveBitmap(Bitmap bm, String fileAbsolutePath) {
@@ -188,7 +191,7 @@ public class IMGEditActivity extends IMGEditBaseActivity {
     public void onDoneClipClick() {
         mImgView.doClip();
         setOpDisplay(mImgView.getMode() == IMGMode.CLIP ? OP_CLIP : OP_NORMAL);
-        
+
     }
 
     @Override
@@ -209,34 +212,5 @@ public class IMGEditActivity extends IMGEditBaseActivity {
     /**
      * 编辑图片需要的bitmap保管类
      */
-    public static class ImageHolder {
-        private static ImageHolder instance;
-        private Bitmap bitmap;
-        private final static ReentrantLock lock = new ReentrantLock();
 
-        private ImageHolder(){
-        }
-
-        public static ImageHolder getInstance() {
-            if (instance == null) {
-                lock.lock();
-                try {
-                    if (instance == null){
-                        instance = new ImageHolder();
-                    }
-                } finally {
-                    lock.unlock();
-                }
-            }
-            return instance;
-        }
-
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-
-        public void setBitmap(Bitmap bitmap) {
-            this.bitmap = bitmap;
-        }
-    }
 }

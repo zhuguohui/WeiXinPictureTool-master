@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,26 +18,28 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 
-import me.kareluo.imaging.IMGEditActivity;
 import me.kareluo.imaging.core.file.IMGAssetFileDecoder;
 import me.kareluo.imaging.core.file.IMGDecoder;
 import me.kareluo.imaging.core.file.IMGFileDecoder;
 import me.kareluo.imaging.core.util.IMGUtils;
+import me.kareluo.imaging.TRSPictureEditor;
 
 public class MainActivity extends AppCompatActivity {
     public static final int REQ_SELECT_PHOTO = 0xf0a;
     private Bitmap avatarBitMap = null;
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        imageView = findViewById(R.id.image);
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             this.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
     }
@@ -72,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    Intent intent = new Intent(this, IMGEditActivity.class);
+                 //   Intent intent = new Intent(this, IMGEditActivity.class);
 
                     try {
                         String uri_path = getFilePathByUri(this, data.getData());
                         System.out.println("============ uri_path " + uri_path);
                         Uri uri = Uri.fromFile(new File(uri_path));
-                        IMGEditActivity.ImageHolder.getInstance().setBitmap(getBitmap(uri));
-                        intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri);
+
+                        // intent.putExtra(IMGEditActivity.EXTRA_IMAGE_URI, uri);
                         int dirEnd = uri_path.lastIndexOf("/") + 1;
                         System.out.println("============ dirEnd " + dirEnd);
                         int nameEnd = uri_path.lastIndexOf(".");
@@ -90,8 +90,15 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("============ nameEnd " + nameEnd);
                         String newPath = fileName + System.currentTimeMillis() + left;
                         System.out.println("============ newPath " + newPath);
-                        intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
-                        startActivity(intent);
+                        //    intent.putExtra(IMGEditActivity.EXTRA_IMAGE_SAVE_PATH, newPath);
+                        //    startActivity(intent);
+                        TRSPictureEditor.edit(this, getBitmap(uri), new TRSPictureEditor.EditAdapter() {
+                            @Override
+                            public void onComplete(Bitmap bitmap) {
+                                imageView.setImageBitmap(bitmap);
+                            }
+                        });
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
