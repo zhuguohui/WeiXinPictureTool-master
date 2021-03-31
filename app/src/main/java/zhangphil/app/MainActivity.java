@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     Uri uri = Uri.fromFile(new File(uri_path));
 
                     TRSPictureEditor.setStyle(buildStyle());
+              //      TRSPictureEditor.disable(TRSPictureEditor.MOSAIC_ENABLE);
                     TRSPictureEditor.edit(this, getBitmap(uri), new TRSPictureEditor.EditAdapter() {
                         @Override
                         public void onComplete(Bitmap bitmap) {

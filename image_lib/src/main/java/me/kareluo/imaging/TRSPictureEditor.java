@@ -37,6 +37,15 @@ public class TRSPictureEditor {
         TRSPictureEditor.style = style;
     }
 
+    public static void disable(int mask) {
+        TRSPictureEditor.style &= ~mask;
+    }
+
+    public static void enable(int mask) {
+        TRSPictureEditor.style &= mask;
+    }
+
+
     public static void edit(Context context, Bitmap bitmap, EditListener editListener) {
         if (editListener == null) {
             return;
